@@ -1,3 +1,4 @@
+ %Quadrature mirror filter bank
  clc;
  clear all;
  close all;
