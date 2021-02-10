@@ -1,3 +1,5 @@
+
+%Quadrature mirror filter bank A
 clc; clear all; close all;
 Fs=50;t=0:1/Fs:1;
 x=fir2(100,[0 0.33 0.33 1],[1 1 0 0]);%define a low pass signsl
