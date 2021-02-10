@@ -1,0 +1,40 @@
+clc;
+clear all;
+close all;
+N=100;%defined order
+L=2;M=3; %defining upsampling and downsampling factor
+w=min((pi/L),(pi/M)); %defining cutoff freq of anti imaging and aliasing filter
+%step 1
+f=[0 0.45 0.45 1];%defined freq of input signal
+m=[1 1 0 0];%defined magnitude
+Xn=fir2(N,f,m);%generated Nth order fir filter
+[H1,W1]=freqz(Xn,1,'whole',N);% frequency response
+subplot(3,2,1),plot(1:(N+1),Xn),title('Input signal'),xlabel('N'),ylabel('Magnitude');
+subplot(3,2,2),plot(W1/pi,abs(H1)),title('Input
+signal'),xlabel('Frequency'),ylabel('Magnitude');
+%upsampling
+Xu=[];
+for i=1:N+1
+Xu=[Xu Xn(i) zeros(1,L-1)];%generating up-sampling sequence
+end
+[H2,W2]=freqz(Xu,1,'whole',N);
+subplot(3,2,3),plot(1:(N+1)*L,Xu),title('Xu[n]');
+subplot(3,2,4),plot(W2/pi,abs(H2)),title('Xu[e^jw]');
+%design of filter
+%f2=[0 1.047 1.047 1];
+q=fir2(N,[0 0.33 0.33 1],[1 1 0 0]);
+[H3,W3]=freqz(q,1,'whole',N);% frequency response
+%subplot(3,2,5),plot(1:(N+1),q);
+%subplot(3,2,6),plot(W3/pi,abs(H3));
+e=conv(q,Xu);%passing upsampled signal through anti imaging and aliasing filter
+[H4,W4]=freqz(e,1,'whole',N);
+%subplot(3,2,5),plot(e);
+%subplot(3,2,6),plot(W4/pi,abs(H4));
+%downsampling
+Y=[];
+for i=1:(length(e))/M
+Y(i)=e(i*M);
+end
+[H5,W5]=freqz(Y,1,'whole',N);
+subplot(3,2,5),plot(1:length(e)/M,Y),title('SRC');
+subplot(3,2,6),plot(W5/pi,abs(H5)),title('SRC in freq');
